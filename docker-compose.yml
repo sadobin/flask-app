@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+        flaskapp:
+                container_name: flask-app
+                build:
+                        context: ./app
+
+                ports:
+                        - '5000:5000'
+
+                networks:
+                        - net
+
+        flask_nginx:
+                container_name: flask-nginx
+                image: nginx
+                build:
+                        context: ./nginx
+                ports:
+                        - '80:80'
+                
+                networks:
+                        - net
+                
+
+networks:
+        net:
