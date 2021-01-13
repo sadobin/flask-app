@@ -1,28 +1,36 @@
 version: '3'
 
-services:
-        flaskapp:
-                container_name: flask-app
-                build:
-                        context: ./app
-
-                ports:
-                        - '5000:5000'
-
-                networks:
-                        - net
-
-        flask_nginx:
-                container_name: flask-nginx
-                image: nginx
-                build:
-                        context: ./nginx
-                ports:
-                        - '80:80'
-                
-                networks:
-                        - net
-                
-
 networks:
-        net:
+    net:
+        ipam:
+            config:
+                - subnet: 172.30.1.0/24
+
+services:
+    app:
+        build:
+            context: ./app
+        
+        container_name: "app"
+
+        ports:
+                - "5000:5000"
+
+        networks:
+                net:
+
+
+    nginx:
+        build:
+            context: ./nginx
+
+        container_name: "app-nginx"
+
+        depends_on:
+                - app
+        ports:
+        - '80:80'
+
+        networks:
+                net:
+                    ipv4_address: 172.30.1.2
