@@ -40,32 +40,62 @@ function config_nginx
 		fi
 }
 
+function create_app_network
+{
+		docker network ls | grep flask-app_net
 
+		if [ ! $? ];
+		then
+			docker network create --driver bridge --subnet 172.30.1.0/24 flask-app_net
+		fi
+}
+
+function run_containers
+{
+		docker-compose build
+
+		## Running application container(s)
+		for i in $( seq 1 ${#IPs[@]} );
+		do
+				docker run -it -d --rm \
+						--name app$i \
+						--network flask-app_net \
+						--ip ${IPs[ $(expr $i - 1) ]} \
+						flask-app_app
+		done
+
+		## Running nginx container
+		docker run -it -d --rm \
+				--name app-nginx \
+				--network flask-app_net \
+				flask-app_nginx
+}
+
+
+## Reseting nginx configuration file
 if [ $1 == "reset" ];
 then
-		echo "[+] Reseting configuration file"
+		echo "[+] Nginx configuration file has been reset"
 		cp ./nginx/template ./nginx/app.conf
 		exit 1
 fi
 
-# Checking existence of file 
+
+## Checking existence of file 
 file_existence
 
 
-# Generating range of IP addresses
+## Generating range of IP addresses
 generate_srv
 
 
-# Modifying nginx.conf content
+## Modifying nginx.conf content
 config_nginx
 
-#echo -e $servers
-#echo -e $IPs
+
+## Creating application docker network
+create_app_network
 
 
-echo "docker-compose build"
-for i in $( seq 1 ${#IPs[@]} );
-do
-		echo "docker run -it -d --rm --name app$i --network flask-app_net --ip ${IPs[ $(expr $i - 1) ]} flask-app_app"
-done
-echo "docker run -it -d --rm --name app-nginx --network flask-app_net flask-app_nginx"
+## Running the application
+run_containers
