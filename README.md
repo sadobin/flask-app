@@ -1,23 +1,21 @@
 # flask-app
 
-## simple application which is used for dockerize application and nginx.
+## Dockerized simple flask application
 
-##### In this little project nginx configured as load balancer with ip_hash method. By removing ip_hash in nginx.conf, it simply turns back to default method, round robin. 
+In this project nginx configured as load balancer with round robin method. By removing hash mark in nginx/template, it change to ip_hash method. setup.sh file used for automating nginx configuration, building containers, and running containers.
 
-By following command build containers:
+In order to reset app.conf (application nginx configuration) issue follow command:
 ```
-$ docker-compose build
-```
-
-Run containers by performing following commands:
-```
-$ docker-compose up
-$ docker run -it -d --rm --name flask_app1 --ip 172.17.0.2 flask_flaskapp
-$ docker run -it -d --rm --name flask_app2 --ip 172.17.0.3 flask_flaskapp
-$ docker run -it -d --rm --name nginx nginx
+$ bash setup.sh reset
 ```
 
-In order to view nginx container ip address, use:
+Run containers by following command:
 ```
-$ docker inspect -f "{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}" nginx
+$ bash setup.sh <instances>
+```
+that in above, "instances" is number of backend applications which are desired to run.
+
+In order to view containers ip address, use:
+```
+$ docker inspect -f "{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}" <container-name>
 ```
