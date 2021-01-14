@@ -28,8 +28,6 @@ services:
 
         depends_on:
                 - app
-        ports:
-        - '80:80'
 
         networks:
                 net:
