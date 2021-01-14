@@ -7,12 +7,12 @@ app = Flask(__name__)
 @app.route('/')
 @app.route('/home')
 def h():
-    return "<pre><h2>Hello, world</h2></pre>"
+    return "<pre><h1>Hello, world</h1></pre>"
 
 @app.route("/about")
 def e():
     return """
-    <pre><h1> Simple Flask Application </h1></pre>
+    <pre><h2> Simple Flask Application </h2></pre>
     """
 
 

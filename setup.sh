@@ -25,6 +25,9 @@ function generate_srv
 						IPs[ ${#IPs[@]} ]=$host_ip
 						servers="${servers}\n\tserver ${host_ip}:5000;"
 				done
+
+		else
+				exit 1
 		fi
 }
 
@@ -44,7 +47,7 @@ function create_app_network
 {
 		docker network ls | grep flask-app_net
 
-		if [ ! $? ];
+		if [ $? ];
 		then
 			docker network create --driver bridge --subnet 172.30.1.0/24 flask-app_net
 		fi
@@ -73,7 +76,7 @@ function run_containers
 
 
 ## Reseting nginx configuration file
-if [ $1 == "reset" ];
+if [ ${#1} -gt 0 ] && [ $1 == "reset" ];
 then
 		echo "[+] Nginx configuration file has been reset"
 		cp ./nginx/template ./nginx/app.conf
