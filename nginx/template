@@ -1,8 +1,19 @@
 upstream backend {
-	ip_hash;
-	server 172.30.1.10;
+	#ip_hash;
+	
+	server 172.30.1.10:5000;
 }
 
 server {
-	proxy_pass http://backend;
+
+	listen 80 default_server;
+
+	server_name _;
+
+	access_log /var/log/nginx/flask-app.access.log;
+	error_log /var/log/nginx/flask-app.error.log;
+
+	location / {
+			proxy_pass http://backend;
+	}
 }
